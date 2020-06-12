@@ -91,7 +91,7 @@ class TypeDefinition {
 
   String _buildParseClass(String expression) {
     final properType = subtype ?? name;
-    return 'new $properType.fromJson($expression)';
+    return '$properType.fromJson($expression)';
   }
 
   String _buildToJsonClass(String expression) {
@@ -113,7 +113,7 @@ class TypeDefinition {
       return "$fieldKey = DateTime.tryParse(json['$key']);";
     } else if (name == 'List') {
       // list of class
-      return "if (json['$key'] != null) {\n\t\t\t$fieldKey = new List<$subtype>();\n\t\t\tjson['$key'].forEach((v) { $fieldKey.add(new $subtype.fromJson(v)); });\n\t\t}";
+      return "if (json['$key'] != null) {\n\t\t\t$fieldKey = <$subtype>[];\n\t\t\tjson['$key'].forEach((v) { $fieldKey.add($subtype.fromJson(v)); });\n\t\t}";
     } else {
       // class
       return "$fieldKey = json['$key'] != null ? ${_buildParseClass(jsonKey)} : null;";
@@ -123,7 +123,7 @@ class TypeDefinition {
   String toJsonExpression(String key, bool privateField) {
     final fieldKey =
         fixFieldName(key, typeDef: this, privateField: privateField);
-    final thisKey = 'this.$fieldKey';
+    final thisKey = '$fieldKey';
     if (isPrimitive) {
       return "data['$key'] = $thisKey;";
     } else if (name == 'List') {
@@ -307,7 +307,7 @@ class ClassDefinition {
   String get _jsonGenFunc {
     final sb = StringBuffer();
     sb.write(
-        '\tMap<String, dynamic> toJson() {\n\t\tfinal Map<String, dynamic> data = new Map<String, dynamic>();\n');
+        '\tMap<String, dynamic> toJson() {\n\t\tfinal Map<String, dynamic> data = <String, dynamic>{};\n');
     fields.keys.forEach((k) {
       sb.write('\t\t${fields[k].toJsonExpression(k, privateFields)}\n');
     });
