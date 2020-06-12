@@ -1,9 +1,9 @@
 import 'package:json_ast/json_ast.dart' show Node;
 import 'package:json_to_dart/helpers.dart';
 
-const String emptyListWarn = "list is empty";
-const String ambiguousListWarn = "list is ambiguous";
-const String ambiguousTypeWarn = "type is ambiguous";
+const String emptyListWarn = 'list is empty';
+const String ambiguousListWarn = 'list is ambiguous';
+const String ambiguousTypeWarn = 'type is ambiguous';
 
 class Warning {
   final String warning;
@@ -13,15 +13,15 @@ class Warning {
 }
 
 Warning newEmptyListWarn(String path) {
-  return new Warning(emptyListWarn, path);
+  return Warning(emptyListWarn, path);
 }
 
 Warning newAmbiguousListWarn(String path) {
-  return new Warning(ambiguousListWarn, path);
+  return Warning(ambiguousListWarn, path);
 }
 
 Warning newAmbiguousType(String path) {
-  return new Warning(ambiguousTypeWarn, path);
+  return Warning(ambiguousTypeWarn, path);
 }
 
 class WithWarning<T> {
@@ -43,7 +43,7 @@ class TypeDefinition {
     if (type == 'List') {
       List<dynamic> list = obj;
       String elemType;
-      if (list.length > 0) {
+      if (list.isNotEmpty) {
         elemType = getTypeName(list[0]);
         for (dynamic listVal in list) {
           if (elemType != getTypeName(listVal)) {
@@ -53,35 +53,34 @@ class TypeDefinition {
         }
       } else {
         // when array is empty insert Null just to warn the user
-        elemType = "Null";
+        elemType = 'Null';
       }
-      return new TypeDefinition(type,
+      return TypeDefinition(type,
           astNode: astNode, subtype: elemType, isAmbiguous: isAmbiguous);
     }
-    return new TypeDefinition(type, astNode: astNode, isAmbiguous: isAmbiguous);
+    return TypeDefinition(type, astNode: astNode, isAmbiguous: isAmbiguous);
   }
 
   TypeDefinition(this.name, {this.subtype, this.isAmbiguous, Node astNode}) {
     if (subtype == null) {
-      _isPrimitive = isPrimitiveType(this.name);
-      if (this.name == 'int' && isASTLiteralDouble(astNode)) {
-        this.name = 'double';
+      _isPrimitive = isPrimitiveType(name);
+      if (name == 'int' && isASTLiteralDouble(astNode)) {
+        name = 'double';
       }
     } else {
       _isPrimitive = isPrimitiveType('$name<$subtype>');
     }
-    if (isAmbiguous == null) {
-      isAmbiguous = false;
-    }
+    isAmbiguous ??= false;
   }
 
+  @override
   bool operator ==(other) {
     if (other is TypeDefinition) {
       TypeDefinition otherTypeDef = other;
-      return this.name == otherTypeDef.name &&
-          this.subtype == otherTypeDef.subtype &&
-          this.isAmbiguous == otherTypeDef.isAmbiguous &&
-          this._isPrimitive == otherTypeDef._isPrimitive;
+      return name == otherTypeDef.name &&
+          subtype == otherTypeDef.subtype &&
+          isAmbiguous == otherTypeDef.isAmbiguous &&
+          _isPrimitive == otherTypeDef._isPrimitive;
     }
     return false;
   }
@@ -91,7 +90,7 @@ class TypeDefinition {
   bool get isPrimitiveList => _isPrimitive && name == 'List';
 
   String _buildParseClass(String expression) {
-    final properType = subtype != null ? subtype : name;
+    final properType = subtype ?? name;
     return 'new $properType.fromJson($expression)';
   }
 
@@ -104,13 +103,13 @@ class TypeDefinition {
     final fieldKey =
         fixFieldName(key, typeDef: this, privateField: privateField);
     if (isPrimitive) {
-      if (name == "List") {
+      if (name == 'List') {
         return "$fieldKey = json['$key'].cast<$subtype>();";
       }
       return "$fieldKey = json['$key'];";
-    } else if (name == "List" && subtype == "DateTime") {
+    } else if (name == 'List' && subtype == 'DateTime') {
       return "$fieldKey = json['$key'].map((v) => DateTime.tryParse(v));";
-    } else if (name == "DateTime") {
+    } else if (name == 'DateTime') {
       return "$fieldKey = DateTime.tryParse(json['$key']);";
     } else if (name == 'List') {
       // list of class
@@ -153,18 +152,18 @@ class Dependency {
 class ClassDefinition {
   final String _name;
   final bool _privateFields;
-  final Map<String, TypeDefinition> fields = new Map<String, TypeDefinition>();
+  final Map<String, TypeDefinition> fields = <String, TypeDefinition>{};
 
   String get name => _name;
   bool get privateFields => _privateFields;
 
   List<Dependency> get dependencies {
-    final dependenciesList = new List<Dependency>();
+    final dependenciesList = <Dependency>[];
     final keys = fields.keys;
     keys.forEach((k) {
       final f = fields[k];
       if (!f.isPrimitive) {
-        dependenciesList.add(new Dependency(k, f));
+        dependenciesList.add(Dependency(k, f));
       }
     });
     return dependenciesList;
@@ -172,21 +171,22 @@ class ClassDefinition {
 
   ClassDefinition(this._name, [this._privateFields = false]);
 
+  @override
   bool operator ==(other) {
     if (other is ClassDefinition) {
       ClassDefinition otherClassDef = other;
-      return this.isSubsetOf(otherClassDef) && otherClassDef.isSubsetOf(this);
+      return isSubsetOf(otherClassDef) && otherClassDef.isSubsetOf(this);
     }
     return false;
   }
 
   bool isSubsetOf(ClassDefinition other) {
-    final List<String> keys = this.fields.keys.toList();
+    final List<String> keys = fields.keys.toList();
     final int len = keys.length;
     for (int i = 0; i < len; i++) {
       TypeDefinition otherTypeDef = other.fields[keys[i]];
       if (otherTypeDef != null) {
-        TypeDefinition typeDef = this.fields[keys[i]];
+        TypeDefinition typeDef = fields[keys[i]];
         if (typeDef != otherTypeDef) {
           return false;
         }
@@ -197,13 +197,13 @@ class ClassDefinition {
     return true;
   }
 
-  hasField(TypeDefinition otherField) {
+  dynamic hasField(TypeDefinition otherField) {
     return fields.keys
             .firstWhere((k) => fields[k] == otherField, orElse: () => null) !=
         null;
   }
 
-  addField(String name, TypeDefinition typeDef) {
+  dynamic addField(String name, TypeDefinition typeDef) {
     fields[name] = typeDef;
   }
 
@@ -219,7 +219,7 @@ class ClassDefinition {
       final f = fields[key];
       final fieldName =
           fixFieldName(key, typeDef: f, privateField: privateFields);
-      final sb = new StringBuffer();
+      final sb = StringBuffer();
       sb.write('\t');
       _addTypeDef(f, sb);
       sb.write(' $fieldName;');
@@ -234,7 +234,7 @@ class ClassDefinition {
           fixFieldName(key, typeDef: f, privateField: false);
       final privateFieldName =
           fixFieldName(key, typeDef: f, privateField: true);
-      final sb = new StringBuffer();
+      final sb = StringBuffer();
       sb.write('\t');
       _addTypeDef(f, sb);
       sb.write(
@@ -246,7 +246,7 @@ class ClassDefinition {
   }
 
   String get _defaultPrivateConstructor {
-    final sb = new StringBuffer();
+    final sb = StringBuffer();
     sb.write('\t$name({');
     var i = 0;
     var len = fields.keys.length - 1;
@@ -275,7 +275,7 @@ class ClassDefinition {
   }
 
   String get _defaultConstructor {
-    final sb = new StringBuffer();
+    final sb = StringBuffer();
     sb.write('\t$name({');
     var i = 0;
     var len = fields.keys.length - 1;
@@ -294,7 +294,7 @@ class ClassDefinition {
   }
 
   String get _jsonParseFunc {
-    final sb = new StringBuffer();
+    final sb = StringBuffer();
     sb.write('\t$name');
     sb.write('.fromJson(Map<String, dynamic> json) {\n');
     fields.keys.forEach((k) {
@@ -305,7 +305,7 @@ class ClassDefinition {
   }
 
   String get _jsonGenFunc {
-    final sb = new StringBuffer();
+    final sb = StringBuffer();
     sb.write(
         '\tMap<String, dynamic> toJson() {\n\t\tfinal Map<String, dynamic> data = new Map<String, dynamic>();\n');
     fields.keys.forEach((k) {
@@ -316,6 +316,7 @@ class ClassDefinition {
     return sb.toString();
   }
 
+  @override
   String toString() {
     if (privateFields) {
       return 'class $name {\n$_fieldList\n\n$_defaultPrivateConstructor\n\n$_gettersSetters\n\n$_jsonParseFunc\n\n$_jsonGenFunc\n}\n';
