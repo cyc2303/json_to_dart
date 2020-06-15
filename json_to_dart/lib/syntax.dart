@@ -132,12 +132,44 @@ class TypeDefinition {
         if (newKeyword) {
           return "if (json['$key'] != null) {\n\t\t\t$fieldKey = new List<$subtype>();\n\t\t\tjson['$key'].forEach((v) { $fieldKey.add(new $subtype.fromJson(v)); });\n\t\t}";
         } else {
-          return "if (json['$key'] != null) {\n\t\t\t$fieldKey = List<$subtype>();\n\t\t\tjson['$key'].forEach((v) { $fieldKey.add(new $subtype.fromJson(v)); });\n\t\t}";
+          return "if (json['$key'] != null) {\n\t\t\t$fieldKey = List<$subtype>();\n\t\t\tjson['$key'].forEach((v) { $fieldKey.add($subtype.fromJson(v)); });\n\t\t}";
         }
       }
     } else {
       // class
       return "$fieldKey = json['$key'] != null ? ${_buildParseClass(jsonKey, newKeyword)} : null;";
+    }
+  }
+
+  String jsonParseExpressionFinal(
+    String key,
+    bool privateField,
+    bool newKeyword,
+    bool thisKeyword,
+    bool collectonLiteral,
+  ) {
+    final jsonKey = "json['$key']";
+    String fieldKey =
+        fixFieldName(key, typeDef: this, privateField: privateField);
+    if (isPrimitive) {
+      if (name == 'List') {
+        return "$fieldKey : json['$key'].cast<$subtype>(),";
+      }
+      return "$fieldKey : json['$key'],";
+    } else if (name == 'List' && subtype == 'DateTime') {
+      return "$fieldKey : json['$key'].map((v) => DateTime.tryParse(v)),";
+    } else if (name == 'DateTime') {
+      return "$fieldKey : DateTime.tryParse(json['$key']),";
+    } else if (name == 'List') {
+      // list of class
+      if (newKeyword) {
+        return "$fieldKey : json['$key'] != null ? List<$subtype>.from(json['$key'].map((x) => new $subtype.fromJson(x))) : null,";
+      } else {
+        return "$fieldKey : json['$key'] != null ? List<$subtype>.from(json['$key'].map((x) => $subtype.fromJson(x))) : null,";
+      }
+    } else {
+      // class
+      return "$fieldKey : json['$key'] != null ? ${_buildParseClass(jsonKey, newKeyword)} : null,";
     }
   }
 
@@ -348,14 +380,28 @@ class ClassDefinition {
 
   String get _jsonParseFunc {
     final sb = StringBuffer();
-    sb.write('\t$name');
-    sb.write('.fromJson(Map<String, dynamic> json) {\n');
-    fields.keys.forEach((k) {
-      sb.write(
-          '\t\t${fields[k].jsonParseExpression(k, privateFields, newKeyword, thisKeyword, collectionLiterals)}\n');
-    });
-    sb.write('\t}');
-    return sb.toString();
+    if (makePropertiesFinal) {
+      sb.write('\tfactory $name');
+      sb.write('.fromJson(Map<String, dynamic> json) {\n');
+      sb.write('\treturn $name(\n');
+      // sb.write('.fromJson(Map<String, dynamic> json) => $name(\n');
+      fields.keys.forEach((k) {
+        sb.write(
+            '\t\t${fields[k].jsonParseExpressionFinal(k, privateFields, newKeyword, thisKeyword, collectionLiterals)}\n');
+      });
+      sb.write('\t);');
+      sb.write('}');
+      return sb.toString();
+    } else {
+      sb.write('\t$name');
+      sb.write('.fromJson(Map<String, dynamic> json) {\n');
+      fields.keys.forEach((k) {
+        sb.write(
+            '\t\t${fields[k].jsonParseExpression(k, privateFields, newKeyword, thisKeyword, collectionLiterals)}\n');
+      });
+      sb.write('\t}');
+      return sb.toString();
+    }
   }
 
   String get _jsonGenFunc {
