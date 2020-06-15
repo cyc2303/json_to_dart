@@ -25,6 +25,7 @@ void main() {
       document.querySelector('#final');
   final CheckboxInputElement makePropertiesRequired =
       document.querySelector('#required');
+  final CheckboxInputElement typesOnly = document.querySelector('#types');
   final ButtonElement copyClipboardButton =
       document.querySelector('#copy-clipboard');
   final TextAreaElement hiddenElement = document.querySelector('#hidden-dart');
@@ -74,6 +75,7 @@ void main() {
         useCollectionLiterals.checked,
         makePropertiesRequired.checked,
         makePropertiesFinal.checked,
+        typesOnly.checked,
       );
       DartCode dartCode;
       try {

@@ -213,6 +213,7 @@ class ClassDefinition {
   final bool _collectionLiterals;
   final bool _makePropertiesRequired;
   final bool _makePropertiesFinal;
+  final bool _typesOnly;
   final Map<String, TypeDefinition> fields = <String, TypeDefinition>{};
 
   String get name => _name;
@@ -222,7 +223,7 @@ class ClassDefinition {
   bool get collectionLiterals => _collectionLiterals;
   bool get makePropertiesRequired => _makePropertiesRequired;
   bool get makePropertiesFinal => _makePropertiesFinal;
-
+  bool get typesOnly => _typesOnly;
   List<Dependency> get dependencies {
     final dependenciesList = <Dependency>[];
     final keys = fields.keys;
@@ -243,6 +244,7 @@ class ClassDefinition {
     this._collectionLiterals = true,
     this._makePropertiesRequired = false,
     this._makePropertiesFinal = false,
+    this._typesOnly = false,
   ]);
 
   @override
@@ -429,10 +431,18 @@ class ClassDefinition {
 
   @override
   String toString() {
-    if (privateFields) {
-      return 'class $name {\n$_fieldList\n\n$_defaultPrivateConstructor\n\n$_gettersSetters\n\n$_jsonParseFunc\n\n$_jsonGenFunc\n}\n';
+    if (typesOnly) {
+      if (privateFields) {
+        return 'class $name {\n$_fieldList\n\n$_defaultPrivateConstructor\n\n$_gettersSetters\n}\n';
+      } else {
+        return 'class $name {\n$_fieldList\n\n$_defaultConstructor\n}\n';
+      }
     } else {
-      return 'class $name {\n$_fieldList\n\n$_defaultConstructor\n\n$_jsonParseFunc\n\n$_jsonGenFunc\n}\n';
+      if (privateFields) {
+        return 'class $name {\n$_fieldList\n\n$_defaultPrivateConstructor\n\n$_gettersSetters\n\n$_jsonParseFunc\n\n$_jsonGenFunc\n}\n';
+      } else {
+        return 'class $name {\n$_fieldList\n\n$_defaultConstructor\n\n$_jsonParseFunc\n\n$_jsonGenFunc\n}\n';
+      }
     }
   }
 }

@@ -25,6 +25,7 @@ class ModelGenerator {
   final bool _collectionLiterals;
   final bool _makePropertiesRequired;
   final bool _makePropertiesFinal;
+  final bool _typesOnly;
   List<ClassDefinition> allClasses = <ClassDefinition>[];
   final Map<String, String> sameClassMapping = <String, String>{};
   List<Hint> hints;
@@ -37,6 +38,7 @@ class ModelGenerator {
     this._collectionLiterals = true,
     this._makePropertiesRequired = false,
     this._makePropertiesFinal = false,
+    this._typesOnly = false,
     hints,
   ]) {
     if (hints != null) {
@@ -68,6 +70,7 @@ class ModelGenerator {
         _collectionLiterals,
         _makePropertiesRequired,
         _makePropertiesFinal,
+        _typesOnly,
       );
       keys.forEach((key) {
         TypeDefinition typeDef;
