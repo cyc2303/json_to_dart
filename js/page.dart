@@ -37,6 +37,7 @@ void main() {
   editor.setTheme('ace/theme/github');
   editor.getSession().setMode("ace/mode/json");
   editor.getSession().setOption("useWorker", false);
+  editor.getSession().setOption("fontSize", 14);
   copyClipboardButton.onClick.listen((MouseEvent event) {
     event.preventDefault();
     event.stopPropagation();

@@ -8,58 +8,91 @@
     <meta name="author" content="">
     <title>JSON to Dart</title>
 
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="styles/github.css">
 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="font_awesome/css/font-awesome.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
 </head>
 
-<body class="bg-light">
-    <div class="container">
-        <div class="py-5 text-center">
-            <h2>JSON to Dart</h2>
-            <p class="lead">Paste your JSON in the textarea below, click convert and get your Dart classes for free.</p>
-        </div>
-        <div class="row code-row">
-            <div class="col-12 col-md-4">
-                <form onsubmit="return false;">
-                    <div class="form-group">
-                        <label for="jsonEditor">JSON</label>
-                        <div id="jsonEditor"></div>
-                    </div>
-                    <input class="form-control mb-2" id="dartClassName" placeholder="Your dart class name goes here">
-                    <button type="submit" class="btn btn-primary">Generate Dart</button>
-                    <label><input type="checkbox" id="private-fields"> Use private fields</label>
-                    <label><input type="checkbox" id="new-keyword"> Use New keyword</label>
-                    <label><input type="checkbox" id="this-keyword"> Use this while accessing class members</label>
-                    <label><input type="checkbox" id="collection-literals" checked> Use Collection literals</label>
-                    <label><input type="checkbox" id="required"> Make all properties Required</label>
-                    <label><input type="checkbox" id="final"> Make all properties Final</label>
-                    <label><input type="checkbox" id="types"> Types only</label>
-                    <button id="copy-clipboard" class="mt-2 btn btn-secondary" disabled>Copy Dart code to clipboard</button>
-                </form>
-            </div>
-            <div class="col-12 col-md-8">
-                <b id="invalid-dart" style="display: none">The Dart code generated is invalid</b>
-                <pre><code class="dart"></code></pre>
-                <textarea style="position:fixed;opacity: 0;" id="hidden-dart"></textarea>
+<body>
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark p-0">
+        <div class="container">
+            <a href="index.html" class="navbar-brand">JSON to Dart</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a href="https://github.com/zeeshanhussain/json_to_dart" class="nav-link">
+                            <i class="fa fa-github"></i> GitHub
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
-        <footer class="my-5 pt-5 text-muted text-center text-small">
-            <p class="mb-1">Handcrafted by Javier Lecuona</p>
-            <ul class="list-inline">
-                <li class="list-inline-item">
-                    <a href="https://github.com/javiercbk">Github</a>
-                </li>
-                <li class="list-inline-item">
-                    <a href="https://github.com/javiercbk/json_to_dart">json_to_dart Code</a>
-                </li>
-                <li class="list-inline-item">
-                    <a href="https://twitter.com/javiercbk">Twitter</a>
-                </li>
-            </ul>
-        </footer>
+    </nav>
+    <!-- Navbar End -->
+
+
+    <div class="row code-row">
+        <!-- Edit area begin -->
+        <div class="col-md-4" style="background-color: #99aab5; color: black; height: 600px;">
+            <form onsubmit="return false;">
+                <div class="form-group">
+                    <label for="jsonEditor" class="p-2">Paste your JSON below</label>
+                    <div id="jsonEditor"></div>
+                </div>
+
+                <input class="form-control mb-2 ml-2 mr-2" id="dartClassName"
+                    placeholder="Your dart class name goes here">
+                <button type="submit" class="btn ml-2 mr-2 btn-block btn-primary">Generate Dart</button>
+                <button id="copy-clipboard" class="btn ml-2 mr-2 btn-block btn-secondary" disabled>Copy Dart code to
+                    clipboard</button>
+            </form>
+        </div>
+        <!-- Edit area -->
+
+        <div class="col-12 col-md-6" style="background-color: #DCDCDC">
+            <b id="invalid-dart" style="display: none">The Dart code generated is invalid</b>
+            <pre><code class="dart"></code></pre>
+            <textarea style="position:fixed;opacity: 0;" id="hidden-dart"></textarea>
+        </div>
+        <div class="col-12 col-md-2" style="background-color: #dbe9f1d8;">
+            <br>
+            <label><input type="checkbox" id="private-fields"> Use private fields</label>
+            <label><input type="checkbox" id="new-keyword"> Use New keyword</label>
+            <label><input type="checkbox" id="this-keyword"> Use this keyword</label>
+            <label><input type="checkbox" id="collection-literals" checked> Use Collection literals</label>
+            <label><input type="checkbox" id="required"> Make all properties Required</label>
+            <label><input type="checkbox" id="final"> Make all properties Final</label>
+            <label><input type="checkbox" id="types"> Types only</label>
+        </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="bg-light text-dark p-3">
+        <div class="container">
+            <div class="row">
+                <div class="col lead text-center">
+                    <b>
+                        <a href="https://github.com/javiercbk">Credits: Javier Lecuona</a>
+                    </b>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Footer end -->
+
     <script src="js/highlight.min.js"></script>
     <script src="js/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/ace-mode-json.js" type="text/javascript" charset="utf-8"></script>
