@@ -20,11 +20,25 @@ class Hint {
 class ModelGenerator {
   final String _rootClassName;
   final bool _privateFields;
+  final bool _newKeyword;
+  final bool _thisKeyword;
+  final bool _collectionLiterals;
+  final bool _makePropertiesRequired;
+  final bool _makePropertiesFinal;
   List<ClassDefinition> allClasses = <ClassDefinition>[];
   final Map<String, String> sameClassMapping = <String, String>{};
   List<Hint> hints;
 
-  ModelGenerator(this._rootClassName, [this._privateFields = false, hints]) {
+  ModelGenerator(
+    this._rootClassName, [
+    this._privateFields = false,
+    this._newKeyword = false,
+    this._thisKeyword = false,
+    this._collectionLiterals = true,
+    this._makePropertiesRequired = false,
+    this._makePropertiesFinal = false,
+    hints,
+  ]) {
     if (hints != null) {
       this.hints = hints;
     } else {
@@ -46,8 +60,15 @@ class ModelGenerator {
     } else {
       final Map<dynamic, dynamic> jsonRawData = jsonRawDynamicData;
       final keys = jsonRawData.keys;
-      ClassDefinition classDefinition =
-          ClassDefinition(className, _privateFields);
+      ClassDefinition classDefinition = ClassDefinition(
+        className,
+        _privateFields,
+        _newKeyword,
+        _thisKeyword,
+        _collectionLiterals,
+        _makePropertiesRequired,
+        _makePropertiesFinal,
+      );
       keys.forEach((key) {
         TypeDefinition typeDef;
         final hint = _hintForPath('$path/$key');
@@ -133,8 +154,7 @@ class ModelGenerator {
         }
       });
     });
-    return DartCode(
-        allClasses.map((c) => c.toString()).join('\n'), warnings);
+    return DartCode(allClasses.map((c) => c.toString()).join('\n'), warnings);
   }
 
   /// generateDartClasses will generate all classes and append one after another

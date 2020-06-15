@@ -10,12 +10,26 @@ import './highlight.dart';
 typedef ACEEditorAnnotation _annotationMapper(Warning w);
 
 void main() {
-  final ButtonElement convertButton = document.querySelector('button[type="submit"]');
+  final ButtonElement convertButton =
+      document.querySelector('button[type="submit"]');
   final highlightedDartCode = document.querySelector('pre code.dart');
-  final CheckboxInputElement usePrivateFieldsCheckbox = document.querySelector('#private-fields');
-  final ButtonElement copyClipboardButton = document.querySelector('#copy-clipboard');
+  final CheckboxInputElement usePrivateFieldsCheckbox =
+      document.querySelector('#private-fields');
+  final CheckboxInputElement useNewKeyword =
+      document.querySelector('#new-keyword');
+  final CheckboxInputElement useThisKeyword =
+      document.querySelector('#this-keyword');
+  final CheckboxInputElement useCollectionLiterals =
+      document.querySelector('#collection-literals');
+  final CheckboxInputElement makePropertiesFinal =
+      document.querySelector('#final');
+  final CheckboxInputElement makePropertiesRequired =
+      document.querySelector('#required');
+  final ButtonElement copyClipboardButton =
+      document.querySelector('#copy-clipboard');
   final TextAreaElement hiddenElement = document.querySelector('#hidden-dart');
-  final InputElement dartClassNameInput = document.querySelector('#dartClassName');
+  final InputElement dartClassNameInput =
+      document.querySelector('#dartClassName');
   final Element boldElement = document.querySelector('#invalid-dart');
   final Element jsonEditor = document.querySelector('#jsonEditor');
   final editor = ace.edit(jsonEditor);
@@ -23,12 +37,12 @@ void main() {
   editor.getSession().setMode("ace/mode/json");
   editor.getSession().setOption("useWorker", false);
   copyClipboardButton.onClick.listen((MouseEvent event) {
-   event.preventDefault();
-   event.stopPropagation();
-   if (!copyClipboardButton.disabled) {
-     hiddenElement.select();
-     document.execCommand("Copy");
-   }
+    event.preventDefault();
+    event.stopPropagation();
+    if (!copyClipboardButton.disabled) {
+      hiddenElement.select();
+      document.execCommand("Copy");
+    }
   });
   convertButton.onClick.listen((MouseEvent event) {
     event.preventDefault();
@@ -52,7 +66,15 @@ void main() {
       json = JSON.stringify(obj, null, 4);
       editor.setValue(json);
       editor.getSession().clearAnnotations();
-      final modelGenerator = new ModelGenerator(dartClassName, usePrivateFieldsCheckbox.checked);
+      final modelGenerator = new ModelGenerator(
+        dartClassName,
+        usePrivateFieldsCheckbox.checked,
+        useNewKeyword.checked,
+        useThisKeyword.checked,
+        useCollectionLiterals.checked,
+        makePropertiesRequired.checked,
+        makePropertiesFinal.checked,
+      );
       DartCode dartCode;
       try {
         dartCode = modelGenerator.generateDartClasses(json);
@@ -64,10 +86,12 @@ void main() {
         try {
           dartCode = modelGenerator.generateUnsafeDart(json);
         } catch (e) {
-          window.alert('Cannot generate dart code. Please check the project caveats.');
+          window.alert(
+              'Cannot generate dart code. Please check the project caveats.');
           hiddenElement.value = '';
           highlightedDartCode.text = '';
-          copyClipboardButton.attributes.putIfAbsent('disabled', () => 'disabled');
+          copyClipboardButton.attributes
+              .putIfAbsent('disabled', () => 'disabled');
           print(e);
           return;
         }
@@ -75,8 +99,12 @@ void main() {
       }
       if (dartCode.warnings != null) {
         try {
-          final annotationMapper = buildAnnotationMapper(parse(json, Settings(source: 'input.json')));
-          final annotations = dartCode.warnings.map<ACEEditorAnnotation>(annotationMapper).where((a) => a != null).toList();
+          final annotationMapper = buildAnnotationMapper(
+              parse(json, Settings(source: 'input.json')));
+          final annotations = dartCode.warnings
+              .map<ACEEditorAnnotation>(annotationMapper)
+              .where((a) => a != null)
+              .toList();
           editor.getSession().setAnnotations(annotations);
         } catch (e) {
           print('Error attempting to set annotations: $e');
