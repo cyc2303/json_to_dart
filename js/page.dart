@@ -37,7 +37,6 @@ void main() {
   editor.setTheme('ace/theme/github');
   editor.getSession().setMode("ace/mode/json");
   editor.getSession().setOption("useWorker", false);
-  editor.getSession().setOption("fontSize", 14);
   copyClipboardButton.onClick.listen((MouseEvent event) {
     event.preventDefault();
     event.stopPropagation();
@@ -113,10 +112,14 @@ void main() {
           print('Error attempting to set annotations: $e');
         }
       }
-      hiddenElement.value = dartCode.code;
-      highlightedDartCode.text = dartCode.code;
-      copyClipboardButton.attributes.remove('disabled');
-      hljs.highlightBlock(highlightedDartCode);
+      if (makePropertiesFinal.checked && usePrivateFieldsCheckbox.checked) {
+        window.alert('Can\'t have both private and final fields at the same time.');
+      } else {
+        hiddenElement.value = dartCode.code;
+        highlightedDartCode.text = dartCode.code;
+        copyClipboardButton.attributes.remove('disabled');
+        hljs.highlightBlock(highlightedDartCode);
+      }
     } else {
       hiddenElement.value = '';
       highlightedDartCode.text = '';

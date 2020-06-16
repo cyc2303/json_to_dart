@@ -3,17 +3,18 @@
 github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 
 */
+.ace_editor {
+  font: 16px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+}
 
 #jsonEditor {
   margin-bottom: 10px;
-  min-height: 55vh;
+  min-height: 60vh;
   display: block;
   top: 0;
   bottom: 0;
   left: 0;
   padding: 5px;
-  opacity: 0.4;
-  background-color: #d5d8da;
 }
 
 #invalid-dart {
