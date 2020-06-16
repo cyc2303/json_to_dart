@@ -43,48 +43,64 @@
     </nav>
     <!-- Navbar End -->
 
-    <div class="container-fluid min-vh-90">
-    <div class="row">
-        <!-- Edit area begin -->
-        <div class="col-md-4"
-            style="padding-left: 1%;background-color: #99aab5;color: black;padding-bottom: 1%;min-height: 85vh;max-height:85vh;">
-            <form onsubmit="return false;">
-                <div class="form-group" style="text-align: center;">
-                    <label for="jsonEditor" class="p-2" style="margin: 0%;">Paste your JSON below</label>
-                    <div id="jsonEditor"></div>
-                </div>
+    <div class="container-fluid min-vh-95">
+        <div class="row">
+            <!-- Edit area begin -->
+            <div class="col-md-4"
+                style="padding-left: 1%;background-color: #99aab5;color: black;padding-bottom: 1%;min-height: 95vh;">
+                <form onsubmit="return false;">
+                    <div class="form-group" style="text-align: center;">
+                        <label for="jsonEditor" class="p-2" style="margin: 0%;">Paste your JSON below</label>
+                        <div id="jsonEditor"></div>
+                    </div>
 
-                <input class="form-control mb-2 ml-2 mr-2" id="dartClassName"
-                    placeholder="Your dart class name goes here">
-                <button type="submit" class="btn ml-2 mr-2 btn-block btn-primary">Generate Dart</button>
-                <button id="copy-clipboard" class="btn ml-2 mr-2 btn-block btn-secondary" disabled>Copy Dart code to
-                    clipboard</button>
-            </form>
-        </div>
-        <!-- Edit area -->
+                    <input class="form-control mb-2 ml-2 mr-2" id="dartClassName"
+                        placeholder="Your dart class name goes here">
+                    <button type="submit" class="btn ml-2 mr-2 btn-block btn-primary">Generate Dart</button>
+                    <button id="copy-clipboard" class="btn ml-2 mr-2 btn-block btn-secondary" disabled>Copy Dart code to
+                        clipboard</button>
+                </form>
+            </div>
+            <!-- Edit area -->
 
-        <div class="col-md-6" style="background-color: #DCDCDC; max-height:85vh">
-            <b id="invalid-dart" style="display: none">The Dart code generated is invalid</b>
-            <pre><code class="dart" style="
+            <div class="col-md-6" style="background-color: #DCDCDC;">
+                <b id="invalid-dart" style="display: none">The Dart code generated is invalid</b>
+                <pre><code class="dart" style="
                 padding-top: 3%;
-                max-height: 85vh;
+                max-height: 92vh;
             "></code></pre>
-            <textarea style="position:fixed;opacity: 0;" id="hidden-dart"></textarea>
+                <textarea style="position:fixed;opacity: 0;" id="hidden-dart"></textarea>
+            </div>
+            <div class="col-md-2 d-flex align-items-start flex-column" style="background-color: #dbe9f1d8;">
+                <br>
+                <label><input type="checkbox" id="private-fields"> Use private fields</label>
+                <label><input type="checkbox" id="new-keyword"> Use New keyword</label>
+                <label><input type="checkbox" id="this-keyword"> Use this keyword</label>
+                <label><input type="checkbox" id="collection-literals" checked> Use Collection literals</label>
+                <label><input type="checkbox" id="required"> Make all properties Required</label>
+                <label><input type="checkbox" id="final"> Make all properties Final</label>
+                <label><input type="checkbox" id="types"> Types only</label>
+                <br>
+                <br>
+                <br>
+                <div>
+                    <div class="col lead text-center">
+                        <b>
+                            <a href="https://dart-lang.github.io/linter/lints/">Pedantic Rules</a>
+                        </b>
+                    </div>
+                    <br>
+                    <div class="col lead text-center">
+                        <b>
+                            <a href="https://github.com/javiercbk">Credits: Javier Lecuona</a>
+                        </b>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-2" style="background-color: #dbe9f1d8;">
-            <br>
-            <label><input type="checkbox" id="private-fields"> Use private fields</label>
-            <label><input type="checkbox" id="new-keyword"> Use New keyword</label>
-            <label><input type="checkbox" id="this-keyword"> Use this keyword</label>
-            <label><input type="checkbox" id="collection-literals" checked> Use Collection literals</label>
-            <label><input type="checkbox" id="required"> Make all properties Required</label>
-            <label><input type="checkbox" id="final"> Make all properties Final</label>
-            <label><input type="checkbox" id="types"> Types only</label>
-        </div>
-    </div>
 
-    <!-- Footer -->
-    <footer class="bg-light text-dark p-3">
+        <!-- Footer -->
+        <!-- <footer class="bg-light text-dark p-3">
         <div class="container">
             <div class="row">
                 <div class="col lead text-center">
@@ -94,8 +110,8 @@
                 </div>
             </div>
         </div>
-    </footer>
-</div>
+    </footer> -->
+    </div>
 
     <!-- Footer end -->
 
