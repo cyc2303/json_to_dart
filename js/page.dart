@@ -37,6 +37,53 @@ void main() {
   editor.setTheme('ace/theme/github');
   editor.getSession().setMode("ace/mode/json");
   editor.getSession().setOption("useWorker", false);
+  usePrivateFieldsCheckbox.onChange.listen((event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (makePropertiesFinal.checked) {
+      usePrivateFieldsCheckbox.checked = false;
+      window
+          .alert('Can\'t have both private and final fields at the same time.');
+    } else {
+      convertButton.click();
+    }
+  });
+  useNewKeyword.onChange.listen((event) {
+    event.preventDefault();
+    event.stopPropagation();
+    convertButton.click();
+  });
+  useThisKeyword.onChange.listen((event) {
+    event.preventDefault();
+    event.stopPropagation();
+    convertButton.click();
+  });
+  useCollectionLiterals.onChange.listen((event) {
+    event.preventDefault();
+    event.stopPropagation();
+    convertButton.click();
+  });
+  makePropertiesFinal.onChange.listen((event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (usePrivateFieldsCheckbox.checked) {
+      makePropertiesFinal.checked = false;
+      window
+          .alert('Can\'t have both private and final fields at the same time.');
+    } else {
+      convertButton.click();
+    }
+  });
+  makePropertiesRequired.onChange.listen((event) {
+    event.preventDefault();
+    event.stopPropagation();
+    convertButton.click();
+  });
+  typesOnly.onChange.listen((event) {
+    event.preventDefault();
+    event.stopPropagation();
+    convertButton.click();
+  });
   copyClipboardButton.onClick.listen((MouseEvent event) {
     event.preventDefault();
     event.stopPropagation();
@@ -113,7 +160,10 @@ void main() {
         }
       }
       if (makePropertiesFinal.checked && usePrivateFieldsCheckbox.checked) {
-        window.alert('Can\'t have both private and final fields at the same time.');
+        usePrivateFieldsCheckbox.checked = false;
+        makePropertiesFinal.checked = false;
+        window.alert(
+            'Can\'t have both private and final fields at the same time.');
       } else {
         hiddenElement.value = dartCode.code;
         highlightedDartCode.text = dartCode.code;
